@@ -3,7 +3,7 @@ import {
   RemoteGraphQLDataSource,
 } from '@apollo/gateway';
 import { GraphQLResponse } from 'apollo-server-types';
-import { FileUpload, Upload } from 'graphql-upload';
+import { FileUpload, Upload } from 'graphql-upload-minimal';
 import { Request, Headers, Response } from 'apollo-server-env';
 import { isObject } from '@apollo/gateway/dist/utilities/predicates';
 import cloneDeep from 'lodash.clonedeep';
@@ -34,8 +34,8 @@ const addChunkedDataToForm: AddDataHandler = (
   resolvedFiles: FileUpload[],
 ): Promise<void> => {
   resolvedFiles.forEach(
-    ({ createReadStream, filename, mimetype: contentType }, i: number) => {
-      form.append(i.toString(), createReadStream(), {
+    ({ createReadStream, filename, mimetype: contentType, fieldName }) => {
+      form.append(fieldName, createReadStream(), {
         contentType,
         filename,
         /*
@@ -57,10 +57,12 @@ const addDataToForm: AddDataHandler = (
 ): Promise<void[]> =>
   Promise.all(
     resolvedFiles.map(
-      async (
-        { createReadStream, filename, mimetype: contentType },
-        i: number,
-      ): Promise<void> => {
+      async ({
+        createReadStream,
+        filename,
+        mimetype: contentType,
+        fieldName,
+      }): Promise<void> => {
         const fileData = await new Promise<Buffer>((resolve, reject) => {
           const stream = createReadStream();
           const buffers: Buffer[] = [];
@@ -72,7 +74,7 @@ const addDataToForm: AddDataHandler = (
             resolve(Buffer.concat(buffers));
           });
         });
-        form.append(i.toString(), fileData, {
+        form.append(fieldName, fileData, {
           contentType,
           filename,
           knownLength: fileData.length,
