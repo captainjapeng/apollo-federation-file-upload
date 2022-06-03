@@ -34,8 +34,8 @@ const addChunkedDataToForm: AddDataHandler = (
   resolvedFiles: FileUpload[],
 ): Promise<void> => {
   resolvedFiles.forEach(
-    ({ createReadStream, filename, mimetype: contentType, fieldName }) => {
-      form.append(fieldName, createReadStream(), {
+    ({ createReadStream, filename, mimetype: contentType }, i) => {
+      form.append(i.toString(), createReadStream(), {
         contentType,
         filename,
         /*
@@ -57,12 +57,10 @@ const addDataToForm: AddDataHandler = (
 ): Promise<void[]> =>
   Promise.all(
     resolvedFiles.map(
-      async ({
-        createReadStream,
-        filename,
-        mimetype: contentType,
-        fieldName,
-      }): Promise<void> => {
+      async (
+        { createReadStream, filename, mimetype: contentType },
+        i,
+      ): Promise<void> => {
         const fileData = await new Promise<Buffer>((resolve, reject) => {
           const stream = createReadStream();
           const buffers: Buffer[] = [];
@@ -74,7 +72,7 @@ const addDataToForm: AddDataHandler = (
             resolve(Buffer.concat(buffers));
           });
         });
-        form.append(fieldName, fileData, {
+        form.append(i.toString(), fileData, {
           contentType,
           filename,
           knownLength: fileData.length,
