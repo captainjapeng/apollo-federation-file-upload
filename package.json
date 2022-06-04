@@ -1,10 +1,10 @@
 {
   "name": "apollo-federation-upload-minimal",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "author": "Guilherme Iscaro (iscaro@profusion.mobi)",
-  "repository": "https://github.com/captainjapeng/apollo-federation-file-upload",
+  "repository": "https://github.com/captainjapeng/apollo-federation-upload-minimal",
   "license": "MIT",
   "private": false,
   "keywords": [
